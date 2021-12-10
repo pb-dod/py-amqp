@@ -276,7 +276,11 @@ class _AbstractTransport:
             # Call shutdown first to make sure that pending messages
             # reach the AMQP broker if the program exits after
             # calling this method.
-            self.sock.shutdown(socket.SHUT_RDWR)
+            try:
+                self.sock.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                # connection already closed on the other end
+                pass
             self.sock.close()
             self.sock = None
         self.connected = False
